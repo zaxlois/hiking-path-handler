@@ -17,12 +17,13 @@ void readString(char s[],int length)
 
 }
 
-int readFromInput(struct route a[])
+struct route *readFromInput(int *k)
 {
-    int k;
-    scanf("%d",&k);
-
-    for (int i=0;i<k;i++)
+    struct route *a;
+    int num;
+    scanf("%d",&num);
+    a = malloc(num * sizeof(struct route));
+    for (int i=0;i<num;i++)
     {
         scanf(" ");
         readString(a[i].start,50);
@@ -30,7 +31,8 @@ int readFromInput(struct route a[])
         scanf(" ");
         readString(a[i].finish,50);
     }
-    return k;
+    *k=num;
+    return a;
 }
 
 void printData(struct route a[],int k)
@@ -262,16 +264,18 @@ void findTimely(struct route a[],int k)
     }
 }
 
-int readFromFile(struct route a[])
+struct route *readFromFile(int *num)
 {
     FILE *fp;
     int i,k;
+    struct route *a;
     char name[50];
     scanf(" ");
     readString(name,50);
 
     fp = fopen(name,"r");
     fscanf(fp,"%d",&k);
+    a = malloc(k * sizeof(struct route));
     for (i=0;i<k && !feof(fp);i++)
     {
         fscanf(fp," ");
@@ -283,7 +287,8 @@ int readFromFile(struct route a[])
         a[i].finish[strcspn(a[i].finish,"\n")]='\0';
     }
     fclose(fp);
-    return k;
+    *num=k;
+    return a;
 }
 
 void saveData(struct route a[],int k)
