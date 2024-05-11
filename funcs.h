@@ -41,9 +41,9 @@ void printData(struct route a[],int k)
     for (i=0;i<40000;i++)
         bs[i]=-1;
 
-    for (i=0;i<k;i++) {
+    for (i=0;i<k;i++)
         bs[a[i].length]=i;
-    }
+
     for (i=0;i<k;i++)
     {
         estGo[i]=round(a[i].length/65.0+a[i].up/10.0);
@@ -52,7 +52,6 @@ void printData(struct route a[],int k)
         else
             estBack[i]= round(a[i].length/65.0+a[i].down/10.0);
     }
-
 
     for (i=39999;i>=0;i--)
     {
@@ -260,7 +259,68 @@ void findTimely(struct route a[],int k)
             printf("From %s to %s\nUphill %d, Downhill %d\nMax altitude %d, Min altitude %d\nLength %d, Estimated time %.0f min\n\n",a[bs[i]].start,a[bs[i]].finish,a[bs[i]].up,a[bs[i]].down,a[bs[i]].maxAlt,a[bs[i]].minAlt,a[bs[i]].length,estGo[bs[i]]);
         else if (estGo[bs[i]]>(float)time && estBack[bs[i]]<=(float)time && strcmp(a[bs[i]].start,a[bs[i]].finish)!=0 && bs[i]!=-1)
             printf("From %s to %s\nUphill %d, Downhill %d\nMax altitude %d, Min altitude %d\nLength %d, Estimated time %.0f min\n\n",a[bs[i]].finish,a[bs[i]].start,a[bs[i]].down,a[bs[i]].up,a[bs[i]].maxAlt,a[bs[i]].minAlt,a[bs[i]].length,estBack[bs[i]]);
-        else if (estGo[bs[i]]<=(float)time && strcmp(a[bs[i]].start,a[bs[i]].finish)==0)
-            printf("From %s to %s\nUphill %d, Downhill %d\nMax altitude %d, Min altitude %d\nLength %d, Estimated time %.0f min\n\n",a[bs[i]].start,a[bs[i]].finish,a[bs[i]].up,a[bs[i]].down,a[bs[i]].maxAlt,a[bs[i]].minAlt,a[bs[i]].length,estGo[bs[i]]);
+    }
+}
+
+int readFromFile(struct route a[])
+{
+    FILE *fp;
+    int i,k;
+    char name[50];
+    scanf(" ");
+    readString(name,50);
+
+    fp = fopen(name,"r");
+    fscanf(fp,"%d",&k);
+    for (i=0;i<k && !feof(fp);i++)
+    {
+        fscanf(fp," ");
+        fgets(a[i].start,50,fp);
+        a[i].start[strcspn(a[i].start,"\n")]='\0';
+        fscanf(fp,"%d %d %d %d %d",&a[i].length,&a[i].up,&a[i].down,&a[i].maxAlt,&a[i].minAlt);
+        fscanf(fp," ");
+        fgets(a[i].finish,50,fp);
+        a[i].finish[strcspn(a[i].finish,"\n")]='\0';
+    }
+    fclose(fp);
+    return k;
+}
+
+void saveData(struct route a[],int k)
+{
+    int i,bs[40000],estGo[k],estBack[k];
+
+    for (i=0;i<40000;i++)
+        bs[i]=-1;
+
+    for (i=0;i<k;i++)
+        bs[a[i].length]=i;
+
+    for (i=0;i<k;i++)
+    {
+        estGo[i] = round(a[i].length / 65.0 + a[i].up / 10.0);
+        if (strcmp(a[i].start, a[i].finish) == 0)
+            estBack[i] = 0;
+        else
+            estBack[i] = round(a[i].length / 65.0 + a[i].down / 10.0);
+    }
+
+    FILE *fw;
+    char name[50];
+    readString(name,50);
+    fw = fopen(name,"w");
+    if (fw != NULL)
+    {
+        for (i=39999;i>=0;i--)
+        {
+            if (strcmp(a[bs[i]].start,a[bs[i]].finish)==0 && bs[i]!=-1)
+                fprintf(fw,"From %s to %s\nUphill %d, Downhill %d\nMax altitude %d, Min altitude %d\nLength %d, Estimated time %d min\n\n",a[bs[i]].start,a[bs[i]].finish,a[bs[i]].up,a[bs[i]].down,a[bs[i]].maxAlt,a[bs[i]].minAlt,a[bs[i]].length,estGo[bs[i]]);
+            else if (strcmp(a[bs[i]].start,a[bs[i]].finish)!=0 && bs[i]!=-1)
+            {
+                fprintf(fw,"From %s to %s\nUphill %d, Downhill %d\nMax altitude %d, Min altitude %d\nLength %d, Estimated time %d min\n\n",a[bs[i]].start,a[bs[i]].finish,a[bs[i]].up,a[bs[i]].down,a[bs[i]].maxAlt,a[bs[i]].minAlt,a[bs[i]].length,estGo[bs[i]]);
+                fprintf(fw,"From %s to %s\nUphill %d, Downhill %d\nMax altitude %d, Min altitude %d\nLength %d, Estimated time %d min\n\n",a[bs[i]].finish,a[bs[i]].start,a[bs[i]].down,a[bs[i]].up,a[bs[i]].maxAlt,a[bs[i]].minAlt,a[bs[i]].length,estBack[bs[i]]);
+            }
+        }
+        fclose(fw);
     }
 }

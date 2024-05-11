@@ -3,9 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "funcs.h"
-
 #define N 500
-
 int main()
 {
     int n;
@@ -14,14 +12,14 @@ int main()
     do
     {
         scanf("%c",&k);
-        while ((c = getchar()) != EOF && c != '\n');
+        while ((c = getchar() ) != EOF && c != '\n' && c!='\r');
         switch (k)
         {
-            case 'i':   n=readFromInput(A);
+            case 'i': n=readFromInput(A);
                 break;
             case 'p':   printData(A,n);
                 break;
-            case '1':   findShort(A,n);
+            case 'l':   findShort(A,n);
                 break;
             case 's':   findLocation(A,n);
                 break;
@@ -33,8 +31,12 @@ int main()
                 break;
             case 't':   findTimely(A,n);
                 break;
+            case 'f': n=readFromFile(A);
+                break;
+            case 'o':   saveData(A,n);
+                break;
         }
-        scanf(" ");
+        scanf (" ");
     }
     while (k!='q');
     return 0;
